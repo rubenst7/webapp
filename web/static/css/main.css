@@ -1,0 +1,9 @@
+/* custom styles */
+
+.container {
+  max-width: 500px;
+}
+
+.btn-space {
+  margin-top: 10px;
+}

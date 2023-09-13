@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  # Nginx service for serving static files and proxying to the web service
+  nginx:
+    restart: always
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./web/static:/static
+    links:
+      - web:web # Link the Nginx container to the 'web' container
+
+  # Web service for running the application
+  web:
+    restart: always
+    build: ./web
+    links:
+      - postgres:postgres # Link the web container to the 'postgres' container
+    environment:
+      POSTGRES_DB: db
+      DATABASE_PORT: 5432
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    expose:
+      - "8000"
+    depends_on:
+      - postgres # Ensure the 'postgres' container is started before the 'web' container
+    command: >
+      sh -c "python3 ./create_db.py &&
+             gunicorn -w 2 -b :8000 app:app"
+
+  # PostgreSQL database service
+  postgres:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - db-data:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    expose:
+      - "5432" # Expose port 5432 for PostgreSQL connections
+
+# Define named volumes for data persistence
+volumes:
+  db-data: # Named volume for PostgreSQL data storage

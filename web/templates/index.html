@@ -1,0 +1,36 @@
+{% extends "_base.html" %}
+
+{% block content %}
+
+<div class="text-center">
+  <h1><strong>To-do List App</strong></h1>
+</div>
+
+<br>
+
+<form action="/addtask" method="POST">
+  <div class="form-group">
+    <input name="text" class="form-control input-lg" type="text" placeholder="Add a task to the list..." required>
+  </div>
+  <input type="submit" class="btn btn-primary btn-lg btn-block" value="Add">
+</form>
+
+<br>
+<hr>
+
+<div>
+  {% for task in tasks %}
+    <div class="row">
+      <div class="col-md-10">
+        <h4 class="well well-sm"><strong>{{ task.text }}</strong> - <em class="text-muted">{{ task.date_task.strftime('%m/%d/%Y') }}</em></h4>
+      </div>
+      <div class="col-md-2">
+        <form action="/delete/{{ task.id }}" method="POST">
+          <button type="submit" class="btn btn-space btn-success">Finish task</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: web
+        image: rubenrs/webapp:latest
+        env:
+        - name: POSTGRES_DB
+          value: db
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: POSTGRES_USER
+          value: test
+        - name: POSTGRES_PASSWORD
+          value: test
+        ports:
+        - containerPort: 8000
+        command:
+        - sh
+        - -c
+        - python3 ./create_db.py && gunicorn -w 2 -b :8000 app:app
